@@ -18,7 +18,7 @@
 				<div class="card border">
 					<div class="card-header">
 						<div class="card-title">
-							Cadastro de clientes
+						<h4>Clientes</h4>
 						</div>
 					</div>
 					<div class="card-body">
