@@ -13,10 +13,16 @@ class ControladorProduto extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function indexView()
     {
         $produtos = Produto::all();
         return view('produtos', compact('produtos'));
+    }
+
+    public function index()
+    {
+        $produtos = Produto::all();
+        return $produtos->toJson();
     }
 
     /**
@@ -39,12 +45,12 @@ class ControladorProduto extends Controller
     public function store(Request $request)
     {
         $produto = new Produto();
-        $produto->nome = $request->input('nomeProduto');
-        $produto->estoque = $request->input('quantEstoque');
-        $produto->preco = $request->input('precoProduto');
-        $produto->categoria_id = $request->input('categoriaProduto');
+        $produto->nome = $request->input('nome');
+        $produto->estoque = $request->input('estoque');
+        $produto->preco = $request->input('preco');
+        $produto->categoria_id = $request->input('categoria_id');
         $produto->save();
-        return redirect('/produtos');
+        return json_encode($produto);
     }
 
     /**
@@ -55,7 +61,12 @@ class ControladorProduto extends Controller
      */
     public function show($id)
     {
-        //
+        $produto = Produto::find($id);
+        if (isset($produto)) {
+            return json_encode($produto);
+        }
+
+        return response('Produto não encontrado.', 404);
     }
 
     /**
@@ -90,8 +101,9 @@ class ControladorProduto extends Controller
             $produto->preco = $request->input('precoProduto');
             $produto->categoria_id = $request->input('categoriaProduto');
             $produto->save();
+            return json_encode($produto);
         }
-        return redirect('/produtos'); 
+        return response('Produto não encontrado', 404); 
     }
 
     /**
@@ -105,7 +117,8 @@ class ControladorProduto extends Controller
         $prod = Produto::find($id);
         if(isset($prod)) {
             $prod->delete();
+            return response('OK', 200);
         }
-        return redirect('/produtos'); 
+        return response('Produto não encontrado.', 404);
     }
 }

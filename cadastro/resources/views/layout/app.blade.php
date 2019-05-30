@@ -16,6 +16,10 @@
 		input, select {
 			margin-bottom: 20px;
 		}
+
+		.actions {
+			padding: 20px;
+		}
 	</style>
 </head>
 <body>
@@ -30,5 +34,9 @@
 	</div>
 
 	<script type="text/javascript" src="{{asset('js/app.js')}}"></script>
+
+	@hasSection('javascript')
+		@yield('javascript')
+	@endif
 </body>
 </html>

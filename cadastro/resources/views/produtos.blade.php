@@ -4,38 +4,189 @@
 	<div class="card border">
 		<div class="card-body">
 			<h5 class="card-title">Cadastro de produtos</h5>
-			@if(count($produtos) > 0)
-			<table class="table table-ordered table-hover">
+			<table class="table table-ordered table-hover" id="tabelaProdutos">
 				<thead>
 					<tr>
 						<th>Código</th>
-						<th>Nome do produto</th>
-						<th>Categoria</th>
-						<th>Estoque</th>
+						<th>Nome</th>
+						<th>Quantidade</th>
 						<th>Preço</th>
+						<th>Categoria</th>
 						<th>Ações</th>
 					</tr>
 				</thead>
 				<tbody>
-					@foreach($produtos as $p)
-						<tr>
-							<td>{{$p->id}}</td>
-							<td>{{$p->nome}}</td>
-							<td>{{$p->categoria_id}}</td>
-							<td>{{$p->estoque}}</td>
-							<td>{{$p->preco}}</td>
-							<td>
-								<a href="/produtos/editar/{{$p->id}}" class="btn btn-sm btn-warning">Editar</a>
-								<a href="/produtos/apagar/{{$p->id}}" class="btn btn-sm btn-danger">Apagar</a>
-							</td>
-						</tr>
-					@endforeach
+						
 				</tbody>
 			</table>
-			@endif
 		</div>
 		<div class="card-footer">
-			<a href="/produtos/novo" class="btn btn-sm btn-success" role="button">Novo produto</a>
+			<button class="btn btn-sm btn-success" role="button" onClick="novoProduto()">Novo produto</button>
 		</div>
 	</div>
+
+	<div class="modal" tabindex="-1" role="dialog" id="dlgProdutos">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<form class="form-horizontal" id="formProduto">
+					<div class="modal-header">
+						<h5 class="modal-title">Novo produto</h5>
+					</div>
+					<div class="modal-body">
+						<input type="hidden" id="id" class="form-control">
+
+						<div class="form-group">
+							<label for="nomeProduto" class="control-label">Nome</label>
+							<div class="input-group">
+								<input type="text" class="form-control" id="nomeProduto" name="nomeProduto" placeholder="Nome do produto">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="precoProduto" class="control-label">Preço</label>
+							<div class="input-group">
+								<input type="number" class="form-control" id="precoProduto" name="precoProduto" placeholder="Preço do produto">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="quantidadeProduto" class="control-label">Quantidade</label>
+							<div class="input-group">
+								<input type="number" class="form-control" id="quantidadeProduto" name="quantidadeProduto" placeholder="Quantidade do produto">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="categoriaProduto" class="control-label">Categoria do produto</label>
+							<div class="input-group">
+								<select class="form-control" id="categoriaProduto">
+									
+								</select>
+							</div>
+						</div>
+
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">Salvar</button>
+						<button type="cancel" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+@endsection
+
+@section('javascript')
+	<script type="text/javascript">
+
+		$.ajaxSetup({
+			headers: {
+				'X-CSRF-TOKEN': "{{ csrf_token() }}"
+			}
+		});
+
+		function novoProduto() {
+			$('#nomeProduto').val('')
+			$('#precoProduto').val('')
+			$('#quantidadeProduto').val('')
+			$('#dlgProdutos').modal('show')
+		}
+
+		function carregarCategorias() {
+			$.getJSON('/api/categorias', function(data) {
+				//categoriaProduto
+				for(i=0; i<data.length; i++) {
+					opcao = '<option value ="' + data[i].id + '">' + data[i].nome + '</option>';
+					$('#categoriaProduto').append(opcao);
+				}
+			});
+		}
+
+		function montarLinha(p) {
+			var linha = 
+
+				"<tr>" + 
+				"<td>" + p.id + "</td>" +
+				"<td>" + p.nome + "</td>" +
+				"<td>" + p.estoque + "</td>" +
+				"<td>" + p.preco + "</td>" +
+				"<td>" + p.categoria_id + "</td>" +
+				"<td>" + 
+					'<button class="btn btn-sm btn-warning" onclick="editar(' + p.id + ')"> Editar </button> ' +
+					'<button class="btn btn-sm btn-danger" onclick="remover(' + p.id + ')"> Apagar </button> ' + 
+				"</td>" +
+				"</tr>";
+
+				return linha;
+		}
+
+		function editar(id) {
+			$.getJSON('/api/produtos/'+id, function(data) {
+				console.log(data);
+				$('#id').val(data.id);
+				$('#nomeProduto').val(data.nome);
+				$('#precoProduto').val(data.preco);
+				$('#quantidadeProduto').val(data.estoque);
+				$('#categoriaProduto').val(data.categoria_id);
+				$('#dlgProdutos').modal('show')
+			});
+		}
+
+		function remover(id) {
+			$.ajax({
+				type: "DELETE",
+				url: "/api/produtos/" + id,
+				context: this,
+				success: function() {
+					linhas = $("#tabelaProdutos>tbody>tr");
+					e = linhas.filter( function(i, elemento) {
+						return elemento.cells[0].textContent == id;
+					} );
+					if (e)
+						e.remove();
+				},
+				error: function(error) {
+					console.log(error);
+				}
+			});
+		}
+
+		function carregarProdutos() {
+			$.getJSON('/api/produtos', function(produtos) {
+				for(i=0; i<produtos.length; i++) {
+					linha = montarLinha(produtos[i]);
+					$('#tabelaProdutos>tbody').append(linha);
+				}
+			});
+		}
+
+		function criarProduto() {
+
+			prod = {
+				nome: $("#nomeProduto").val(),
+				preco: $("#precoProduto").val(),
+				estoque: $("#quantidadeProduto").val(),
+				categoria_id: $("#categoriaProduto").val()
+			};
+
+			$.post("/api/produtos", prod, function(data) {
+				produto = JSON.parse(data);
+				linha = montarLinha(produto);
+				$('#tabelaProdutos>tbody').append(linha);
+			});
+		}
+
+		$("#formProduto").submit( function(event) {
+			event.preventDefault();
+			criarProduto();
+			$("#dlgProdutos").modal('hide');
+		});
+
+		$(function() {
+			carregarCategorias();
+			carregarProdutos();
+		})
+
+	</script>
 @endsection
