@@ -22,6 +22,7 @@
 						</div>
 					</div>
 					<div class="card-body">
+					@if(count($clientes) > 0)
 						<table class="table table-bordered table-hover" id="tabelaProdutos">
 							<thead>
 								<tr>
@@ -44,6 +45,10 @@
 								@endforeach
 							</tbody>
 						</table>
+					@else
+						<h1>Nenhum cliente cadastrado.</h1>
+						<a href="/novocliente" class="btn btn-lg btn-primary">Novo cliente</a>
+					@endif
 					</div>
 				</div>
 			</div>
