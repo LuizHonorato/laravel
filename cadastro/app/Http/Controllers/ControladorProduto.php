@@ -96,10 +96,10 @@ class ControladorProduto extends Controller
     {
         $produto = Produto::find($id);
         if(isset($produto)) {
-            $produto->nome = $request->input('nomeProduto');
-            $produto->estoque = $request->input('quantEstoque');
-            $produto->preco = $request->input('precoProduto');
-            $produto->categoria_id = $request->input('categoriaProduto');
+            $produto->nome = $request->input('nome');
+            $produto->estoque = $request->input('estoque');
+            $produto->preco = $request->input('preco');
+            $produto->categoria_id = $request->input('categoria_id');
             $produto->save();
             return json_encode($produto);
         }
