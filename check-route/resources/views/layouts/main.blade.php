@@ -28,6 +28,7 @@
                 //console.log(url)
                 if(rota == url.action.as) {
                     //console.log("Rotas iguais!")
+                    $("#mensagem_pagina").removeClass("text-danger");
                     $("#mensagem_pagina").addClass("text-success");
                     document.getElementById("mensagem_pagina").innerHTML = "Página encontrada!";
                     $('#cadastra_pagina').prop('disabled', false);
@@ -36,6 +37,7 @@
                 else {
                     //url = JSON.parse(data)
                     //console.log("Rotas diferentes: " + url.uri);
+                    $("#mensagem_pagina").removeClass("text-success");
                     $("#mensagem_pagina").addClass("text-danger");
                     document.getElementById("mensagem_pagina").innerHTML = "Página não encontrada. Digite o nome correto ou entre em contato com o seu webmaster para obter ajuda.";
                     $('#cadastra_pagina').prop('disabled', true);
