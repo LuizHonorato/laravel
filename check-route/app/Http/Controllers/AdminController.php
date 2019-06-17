@@ -90,9 +90,14 @@ class AdminController extends Controller
         {
             if($r->getName() == $rota)
             {
-                return $r->getName();
+                return json_encode($r);
             }
         }
         return json_encode($routes);
+    }
+
+    public function produtoAdmin()
+    {
+        return 'teste';
     }
 }

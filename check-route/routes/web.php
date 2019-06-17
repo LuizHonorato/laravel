@@ -13,6 +13,8 @@
 
 Route::get('/admin', 'AdminController@index')->name('admin');
 
+Route::get('/produtos', 'AdminController@produtoAdmin')->name('produtos');
+
 Route::get('/', 'HomeController@index')->name('home');
 
 
